@@ -31,12 +31,6 @@
 #   make
 #
 
-
-## Project name to use as command prefix.
-
-project(SUPERTUX)
-
-
 ### CMake configuration
 
 cmake_minimum_required(VERSION 3.1)
@@ -45,6 +39,10 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0008 NEW)
   cmake_policy(SET CMP0023 NEW)
 endif(COMMAND cmake_policy)
+
+## Project name to use as command prefix.
+
+project(SUPERTUX)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -241,6 +239,7 @@ if(NOT USE_SYSTEM_PHYSFS)
   set(PHYSFS_PREFIX ${CMAKE_BINARY_DIR}/physfs/)
   ExternalProject_Add(physfs
     SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/physfs/"
+    BUILD_BYPRODUCTS "${PHYSFS_PREFIX}/lib/physfs.lib"
     CMAKE_ARGS
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
     -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
@@ -273,7 +272,7 @@ if(WIN32 AND VCPKG_BUILD)
   list(LENGTH CURL_LIBRARY CURL_LIBRARY_LENGTH)
   if (CURL_LIBRARY_LENGTH EQUAL 1)
     set(CURL_LIBRARY_DEBUG_LIB   ${CURL_LIBRARY})
-      set(CURL_LIBRARY_RELEASE_LIB ${CURL_LIBRARY_DEBUG_LIB}/../../../lib/libcurl.lib)
+      find_library(CURL_LIBRARY_RELEASE_LIB NAMES libcurl)
       get_filename_component(CURL_LIBRARY_RELEASE_LIB ${CURL_LIBRARY_RELEASE_LIB} REALPATH)
       unset(CURL_LIBRARY CACHE)
       unset(CURL_LIBRARY)
@@ -391,6 +390,7 @@ endif()
 set(SQUIRREL_PREFIX ${CMAKE_BINARY_DIR}/squirrel/ex)
 ExternalProject_Add(squirrel
   SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/squirrel/"
+  BUILD_BYPRODUCTS "${SQUIRREL_PREFIX}/lib/squirrel.lib" "${SQUIRREL_PREFIX}/lib/sqstdlib.lib"
   CMAKE_ARGS
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -435,6 +435,7 @@ endif()
 set(TINYGETTEXT_PREFIX ${CMAKE_BINARY_DIR}/tinygettext/)
 ExternalProject_Add(tinygettext
   SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/tinygettext/"
+  BUILD_BYPRODUCTS "${TINYGETTEXT_PREFIX}/lib/tinygettext.lib"
   CMAKE_ARGS
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -467,6 +468,7 @@ endif()
 set(SDL_TTF_PREFIX ${CMAKE_BINARY_DIR}/SDL_ttf/)
 ExternalProject_Add(SDL_ttf
   SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/SDL_ttf/"
+  BUILD_BYPRODUCTS "${SDL_TTF_PREFIX}/lib/SDL2_ttf.lib"
   CMAKE_ARGS
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
