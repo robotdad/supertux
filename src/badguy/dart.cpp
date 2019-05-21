@@ -28,7 +28,7 @@ static const std::string DART_SOUND = "sounds/flame.wav";
 
 Dart::Dart(const ReaderMapping& reader) :
   BadGuy(reader, "images/creatures/dart/dart.sprite"),
-  parent(nullptr),
+  parent(NULL),
   sound_source()
 {
   m_physic.enable_gravity(false);
