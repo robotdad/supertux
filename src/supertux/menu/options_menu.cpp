@@ -299,7 +299,7 @@ OptionsMenu::OptionsMenu(bool complete) :
   }
 
   // sort sound_volumes from begin to end less_than_volume
-  
+  std::sort(sound_volumes.begin, sound_volumes.end, less_than_volume);
 
   std::ostringstream out;
   out << g_config->sound_volume << "%";

@@ -10,7 +10,8 @@
       "cmakeCommandArgs": "-DVCPKG_BUILD=True",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
-      "variables": []
+      "variables": [],
+      "codeAnalysisRuleset": "supertuxRuleset.ruleset"
     },
     {
       "name": "Linux-Debug",

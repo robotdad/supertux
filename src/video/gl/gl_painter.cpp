@@ -160,6 +160,9 @@ GLPainter::draw_texture(const TextureRequest& request)
 
   GLContext& context = m_video_system.get_context();
 
+  std::string s = "Hallo ADC++";
+  s.append("Wie gehts?");
+
   context.blend_func(sfactor(request.blend), dfactor(request.blend));
   context.bind_texture(texture, request.displacement_texture);
   context.set_texcoords(uvs.data(), sizeof(float) * uvs.size());

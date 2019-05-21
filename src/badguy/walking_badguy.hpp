@@ -17,6 +17,8 @@
 #ifndef HEADER_SUPERTUX_BADGUY_WALKING_BADGUY_HPP
 #define HEADER_SUPERTUX_BADGUY_WALKING_BADGUY_HPP
 
+constexpr auto WALK_SPEED = 80;
+
 #include "badguy/badguy.hpp"
 
 class Timer;
