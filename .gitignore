@@ -21,6 +21,7 @@ CMakeLists.txt.user
 
 # Visual Studio files
 .vs/
+out/
 
 # Visual Studio Code project file
 language.settings.xml
