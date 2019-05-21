@@ -4,66 +4,34 @@
       "name": "x86-Debug",
       "generator": "Ninja",
       "configurationType": "Debug",
-      "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
-      "installRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\install\\${name}",
-      "cmakeCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "-DVCPKG_BUILD=True",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
-      "inheritEnvironments": [ "msvc_x86" ],
-      "variables": [
-        {
-          "name": "VCPKG_BUILD",
-          "value": "True",
-          "type": "STRING"
-        }
-      ]
+      "variables": []
     },
     {
-      "name": "x86-Release",
-      "generator": "Ninja",
-      "configurationType": "Release",
-      "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
-      "installRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\install\\${name}",
-      "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v",
-      "ctestCommandArgs": "",
-      "inheritEnvironments": [ "msvc_x86" ],
-      "variables": [
-        {
-          "name": "VCPKG_BUILD",
-          "value": "True",
-          "type": "STRING"
-        }
-      ],
-      "codeAnalysisRuleset": "${workspaceRoot}\\RuleSet1.ruleset"
-    },
-    {
-      "name": "Linux-Release",
+      "name": "Linux-Debug",
       "generator": "Unix Makefiles",
-      "configurationType": "Release",
-      "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
-      "installRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\install\\${name}",
+      "configurationType": "Debug",
       "cmakeExecutable": "/usr/local/bin/cmake",
-      "remoteCopySourcesExclusionList": [ ".vs", ".git" ],
-      "cmakeCommandArgs": "",
+      "remoteCopySourcesExclusionList": [ ".vs", ".git", "out" ],
+      "cmakeCommandArgs": "-DVCPKG_BUILD=True",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "linux_x64" ],
       "remoteMachineName": "${defaultRemoteMachineName}",
-      "remoteCMakeListsRoot": "/var/tmp/src/${workspaceHash}/${name}",
-      "remoteBuildRoot": "/var/tmp/build/${workspaceHash}/build/${name}",
-      "remoteInstallRoot": "/var/tmp/build/${workspaceHash}/install/${name}",
+      "remoteCMakeListsRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/src",
+      "remoteBuildRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/build/${name}",
+      "remoteInstallRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/install/${name}",
       "remoteCopySources": true,
       "rsyncCommandArgs": "-t --delete --delete-excluded",
       "remoteCopyBuildOutput": false,
       "remoteCopySourcesMethod": "rsync",
-      "variables": [
-        {
-          "name": "VCPKG_BUILD",
-          "value": "False",
-          "type": "STRING"
-        }
-      ]
+      "addressSanitizerRuntimeFlags": "detect_leaks=0",
+      "variables": []
     }
   ]
 }
