@@ -137,7 +137,7 @@ link_directories(${Boost_LIBRARY_DIRS})
 
 find_package(PNG REQUIRED)
 
-if(WIN32)
+if(WIN32 OR VCPKG_BUILD)
   if(VCPKG_BUILD)
     find_package(SDL2 CONFIG REQUIRED)
     find_path(SDL2_INCLUDE_DIRS SDL2/SDL.h)
@@ -157,11 +157,11 @@ if(WIN32)
     find_path(PHYSFS_INCLUDE_DIR NAMES physfs.h PATHS "${DEPENDENCY_FOLDER}/include/physfs")
   endif(VCPKG_BUILD)
 
-else(WIN32)
+else(WIN32 OR VCPKG_BUILD)
   include(FindPkgConfig)
   pkg_search_module(SDL2 REQUIRED sdl2>=2.0.1)
   pkg_search_module(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
-endif(WIN32)
+endif(WIN32 OR VCPKG_BUILD)
 set(HAVE_SDL TRUE)
 
 option(IS_SUPERTUX_RELEASE "Build as official SuperTux release" OFF)
@@ -239,7 +239,7 @@ if(NOT USE_SYSTEM_PHYSFS)
   set(PHYSFS_PREFIX ${CMAKE_BINARY_DIR}/physfs/)
   ExternalProject_Add(physfs
     SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/physfs/"
-    BUILD_BYPRODUCTS "${PHYSFS_PREFIX}/lib/physfs.lib"
+    BUILD_BYPRODUCTS "${PHYSFS_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}physfs${CMAKE_STATIC_LIBRARY_SUFFIX}"
     CMAKE_ARGS
     -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
     -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
@@ -390,7 +390,7 @@ endif()
 set(SQUIRREL_PREFIX ${CMAKE_BINARY_DIR}/squirrel/ex)
 ExternalProject_Add(squirrel
   SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/squirrel/"
-  BUILD_BYPRODUCTS "${SQUIRREL_PREFIX}/lib/squirrel.lib" "${SQUIRREL_PREFIX}/lib/sqstdlib.lib"
+  BUILD_BYPRODUCTS "${SQUIRREL_PREFIX}/lib/squirrel.lib" "${SQUIRREL_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}sqstdlib${CMAKE_STATIC_LIBRARY_SUFFIX}"
   CMAKE_ARGS
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -435,7 +435,7 @@ endif()
 set(TINYGETTEXT_PREFIX ${CMAKE_BINARY_DIR}/tinygettext/)
 ExternalProject_Add(tinygettext
   SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/tinygettext/"
-  BUILD_BYPRODUCTS "${TINYGETTEXT_PREFIX}/lib/tinygettext.lib"
+  BUILD_BYPRODUCTS "${TINYGETTEXT_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}tinygettext${CMAKE_STATIC_LIBRARY_SUFFIX}"
   CMAKE_ARGS
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -468,7 +468,7 @@ endif()
 set(SDL_TTF_PREFIX ${CMAKE_BINARY_DIR}/SDL_ttf/)
 ExternalProject_Add(SDL_ttf
   SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/SDL_ttf/"
-  BUILD_BYPRODUCTS "${SDL_TTF_PREFIX}/lib/SDL2_ttf.lib"
+  BUILD_BYPRODUCTS "${SDL_TTF_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}SDL2_ttf${CMAKE_STATIC_LIBRARY_SUFFIX}"
   CMAKE_ARGS
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -775,6 +775,22 @@ if(WIN32 AND NOT VCPKG_BUILD)
     $<TARGET_FILE_DIR:supertux2_lib>)
 endif(WIN32 AND NOT VCPKG_BUILD)
 
+if(WIN32 AND VCPKG_BUILD)
+  ## Copy external dlls on windows
+  get_property(SQUIRREL_LIB_PATH TARGET squirrel_lib PROPERTY IMPORTED_LOCATION)
+  get_property(SQSTDLIB_LIB_PATH TARGET sqstdlib_lib PROPERTY IMPORTED_LOCATION)
+  get_property(PHYSFS_LIB_PATH TARGET physfs_lib PROPERTY IMPORTED_LOCATION)
+  add_custom_command(TARGET supertux2_lib POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy "${SQUIRREL_LIB_PATH}"
+    $<TARGET_FILE_DIR:supertux2_lib>)
+  add_custom_command(TARGET supertux2_lib POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy "${SQSTDLIB_LIB_PATH}"
+    $<TARGET_FILE_DIR:supertux2_lib>)
+  add_custom_command(TARGET supertux2_lib POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy "${PHYSFS_LIB_PATH}"
+    $<TARGET_FILE_DIR:supertux2_lib>)
+endif(WIN32 AND VCPKG_BUILD)
+
 ## Link supertux binary with squirrel and other libraries
 
 add_dependencies(supertux2_lib tinygettext)
@@ -838,6 +854,9 @@ endif(HAVE_OPENGL)
 if(HAVE_LIBCURL)
   if(VCPKG_BUILD)
     target_link_libraries(supertux2_lib PUBLIC ${CURL_LIBRARIES})
+    if(NOT WIN32)
+      target_link_libraries(supertux2_lib PUBLIC -lssl -lcrypto)
+    endif(NOT WIN32)
   else()
     target_link_libraries(supertux2_lib PUBLIC ${CURL_LIBRARY})
   endif()
